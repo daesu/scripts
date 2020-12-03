@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# timezones to show datetime for
+tzs=(Asia/Seoul Asia/Manila America/Sao_Paulo Europe/Dublin)
+
+me=`basename "$0"`
+show_usage(){
+  printf "Usage: $me [parameters]\n"
+  printf "\n"
+  printf "Parameters:\n"
+  printf "datetime e.g. 9pm, 'Dec 5 10pm', '2020-08-25T22:00'\n"
+  printf "timezone (optional) e.g. Asia/Seoul\n"
+}
+
+if [ -z "$1" ]; then
+ show_usage
+ exit
+fi
+
+if [[ "$2" != "" ]]; then
+  curTz="$2"
+else
+  curTz=$(cat /etc/timezone)
+fi
+
+printf "\e[31m$curTz\e[0m \n"
+TZ=$curTz date --date="TZ=\"$curTz\" $1"
+printf " \n"
+for tz in "${tzs[@]}"; do
+  printf "\e[32m$tz\e[0m \n"
+  TZ=$tz date --date="TZ=\"$curTz\" $1"
+done
