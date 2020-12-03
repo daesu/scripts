@@ -5,7 +5,9 @@ tzs=(Asia/Seoul Asia/Manila America/Sao_Paulo Europe/Dublin)
 
 me=`basename "$0"`
 show_usage(){
-  printf "Usage: $me [parameters]\n"
+  printf "Usage: $me [args]\n"
+  printf "Show time in different timezones by current timezone (or optionally specified timezone) \n"
+  printf "whattimeis 9pm Asia/Seoul"
   printf "\n"
   printf "Parameters:\n"
   printf "datetime e.g. 9pm, 'Dec 5 10pm', '2020-08-25T22:00'\n"
@@ -17,10 +19,10 @@ if [ -z "$1" ]; then
  exit
 fi
 
+
+curTz=$(cat /etc/timezone)
 if [[ "$2" != "" ]]; then
   curTz="$2"
-else
-  curTz=$(cat /etc/timezone)
 fi
 
 printf "\e[31m$curTz\e[0m \n"
