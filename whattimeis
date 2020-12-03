@@ -19,7 +19,7 @@ if [ -z "$1" ]; then
  exit
 fi
 
-curTz=$(cat /etc/timezone)
+curTz=$(timedatectl status | grep "zone" | sed -e 's/^[ ]*Time zone: \(.*\) (.*)$/\1/g')
 if [[ "$2" != "" ]]; then
   curTz="$2"
 fi
