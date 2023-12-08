@@ -1,17 +1,17 @@
 # scripts
 
-### whattimeis 
+## whattimeis 
 Display specified time (optionally specified time in specific timezone) in other timezones. 
 
 usage: `whatimeis 9pm Asia/Seoul`
 
-### sw
+## sw
 Stopwatch on the cmdline 
 
-### rclone-backup
+## rclone-backup
 Backups a directory and encrypts it to an rclone remote.
 
-#### Environment Variables
+### Environment Variables
 DIRECTORY_TO_ARCHIVE=<full path to directory to backup>
 REMOTE_NAME=<remote service to use e.g. gdrive>
 REMOTE_PATH=<remote path to use>
