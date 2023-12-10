@@ -63,10 +63,6 @@ fi
 echo "Uploading encrypted archive to remote: $REMOTE_NAME"
 rclone copy $ENCRYPTED_ARCHIVE_NAME $REMOTE_NAME:$REMOTE_PATH
 
-# Delete the local archive
-echo "Deleting local archive."
-rm $ARCHIVE_NAME
-
 # Delete the local encrypted archive
 echo "Deleting local encrypted archive."
 rm $ENCRYPTED_ARCHIVE_NAME
