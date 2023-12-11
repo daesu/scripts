@@ -11,19 +11,12 @@ else
     exit 1
 fi
 
+# Today timestamp 
+TIMESTAMP=$(date +"%Y%m%d")
+
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 BACKUP_DIR="$SCRIPT_DIR/backups"
-
-# Create the backups directory if it doesn't exist
-if [ ! -d "$BACKUP_DIR" ]; then
-    echo "Creating backups directory: $BACKUP_DIR"
-    mkdir -p "$BACKUP_DIR"
-fi
-
-
-# Create a timestamp
-TIMESTAMP=$(date +"%Y%m%d")
 
 # Archive the directory and store in the backups directory
 ARCHIVE_NAME="$BACKUP_DIR/backup_$TIMESTAMP.tar.gz"
@@ -35,9 +28,35 @@ if rclone lsf $REMOTE_NAME:$REMOTE_PATH | grep -q ${ENCRYPTED_ARCHIVE_NAME##*/};
     exit 0
 fi
 
+# Create the backups directory if it doesn't exist
+if [ ! -d "$BACKUP_DIR" ]; then
+    echo "Creating backups directory: $BACKUP_DIR"
+    mkdir -p "$BACKUP_DIR"
+fi
+
+# Navigate to the directory to backup
+cd "$DIRECTORY_TO_ARCHIVE"
+
+# Check if the .git directory exists to determine if it's already a Git repository
+if [ ! -d ".git" ]; then
+    echo "Initializing new Git repository..."
+    git init
+fi
+
+# Add all files in the current directory to the staging area
+git add -A
+
+# Commit the changes with the timestamp as the message
+git commit -m "$TIMESTAMP"
+
+echo "Commit completed with timestamp $TIMESTAMP"
+
+# Navigate to the scripts directory
+cd $SCRIPT_DIR
+
 echo "Archiving directory: $DIRECTORY_TO_ARCHIVE"
 echo "Creating archive: $ARCHIVE_NAME"
-tar -czvf "$ARCHIVE_NAME" -C "$DIRECTORY_TO_ARCHIVE" .
+tar -czf "$ARCHIVE_NAME" -C "$DIRECTORY_TO_ARCHIVE" .
 
 # Check if the archive was created successfully
 if [ -f "$ARCHIVE_NAME" ]; then
@@ -63,17 +82,13 @@ fi
 echo "Uploading encrypted archive to remote: $REMOTE_NAME"
 rclone copy $ENCRYPTED_ARCHIVE_NAME $REMOTE_NAME:$REMOTE_PATH
 
-# Delete the local archive
-echo "Deleting local archive."
-rm $ARCHIVE_NAME
-
 # Delete the local encrypted archive
 echo "Deleting local encrypted archive."
 rm $ENCRYPTED_ARCHIVE_NAME
 
-# Delete remote encrypted archives older than 30 days
-echo "Deleting remote encrypted archives older than 30 days."
-rclone delete $REMOTE_NAME:notes/backup/ --min-age 10d
+# Delete remote encrypted archives older than 3 days
+echo "Deleting remote encrypted archives older than 3 days."
+rclone delete $REMOTE_NAME:notes/backup/ --min-age 3d
 
 echo "Backup process completed."
 
